@@ -87,12 +87,8 @@ server.get("/repos", function(req, res, next) {
 server.post("/favorite/:repo", function(req, res, next) {
 	mongoServer.connect(mongoUri, function(err, db) {
 		var favorites = db.collection('favorites');
-		var userid = req.header("userid");
-		var tenantid = req.header("tenantid");
 		var favDoc = {
-			repo: req.params.repo,
-			userid: userid,
-			tenantid: tenantid
+			repo: req.params.repo
 		};
 		
 		var isFavorite = req.params.isFavorite;
