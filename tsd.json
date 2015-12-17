@@ -13,6 +13,12 @@
     },
     "node/node.d.ts": {
       "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
+    },
+    "request/request.d.ts": {
+      "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
+    },
+    "form-data/form-data.d.ts": {
+      "commit": "11322524f8db9cdb921427cad84cd22fe2d4f965"
     }
   }
 }

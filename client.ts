@@ -1,4 +1,24 @@
 var selectedPackage = null;
+var Ajax = {
+    request : function (url, method, headers, data,success,failure){
+		var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200){
+                // the request is complete, parse data and call callback
+                var response = JSON.parse(xhr.responseText);
+                success(response);
+            }else if (xhr.readyState === XMLHttpRequest.DONE) { // something went wrong but complete
+                failure();
+            }
+        };
+        xhr.open(method,url,true);
+		for(var header in headers) {
+			xhr.setRequestHeader(header, headers[header]);
+		}
+        xhr.send();
+    },
+};
 function renderContributors(contributors) {
 	document.getElementById("contributors_container").style.display = "block";
 	(<HTMLSpanElement>document.querySelectorAll("#contributors_title span")[0]).innerHTML = selectedPackage;
@@ -37,15 +57,7 @@ function renderRepos(repos) {
 			"click",
 			function(e) {
 				selectedPackage = (<HTMLElement>e.target).innerHTML;
-				var fakeContributors = [];
-				for(var i = 0; i < 10; i++) {
-					fakeContributors.push({
-						avatar_url: "https://avatars0.githubusercontent.com/u/1116907?v=3&s=400",
-						login: "user" + i,
-						contributions: i
-					});
-				}
-				renderContributors(fakeContributors);
+				Ajax.request("/contributors/" + selectedPackage, "GET", null, null, renderContributors, null);
 			}
 		);
 	}
@@ -73,13 +85,5 @@ function renderRepos(repos) {
 	}
 }
 document.addEventListener("DOMContentLoaded", function() {
-	var fakeRepos = [];
-	for(var index=0; index < 10; index++) {
-		fakeRepos.push({
-			name: "package" + index,
-			rank: index,
-			favorite: false
-		});
-	}
-	renderRepos(fakeRepos)
+	Ajax.request("/repos", "GET", null, null, renderRepos, null);
 });
