@@ -45,15 +45,22 @@ server.get("/repos", function(req, res, next) {
 		var packageNames = Object.keys(packages).slice(0, NUM_PACKAGES_TO_SHOW);
 		var payload = [];
 		var num_processed = 0;
-		var favorites = null;
 		mongoServer.connect(mongoUri, function(err, db) {
+			var favorites = db.collection('favorites');
 			packageNames.forEach(function(name) {
 				
 				var objToFind = {
 					repo: name,
+					userid: null,
+					tenantid: null
 				};
-				favorites = db.collection('favorites');
-				favorites.find(objToFind).next(function(err, doc) {
+				var userid = req.header("userid");
+				var tenantid = req.header("tenantid");
+				if(userid != null && tenantid != null) {
+					objToFind.userid = userid;
+					objToFind.tenantid = tenantid;
+				}
+				favorites.findOne(objToFind, function(err, doc) {
 					var item = {name: name, rank: packages[name].rank, favorite: false};
 					if(doc !== null) {
 						item.favorite = true;
@@ -85,27 +92,32 @@ server.get("/repos", function(req, res, next) {
 server.post("/favorite/:repo", function(req, res, next) {
 	mongoServer.connect(mongoUri, function(err, db) {
 		var favorites = db.collection('favorites');
+		var userid = req.header("userid");
+		var tenantid = req.header("tenantid");
 		var favDoc = {
-			repo: req.params.repo
+			repo: req.params.repo,
+			userid: userid,
+			tenantid: tenantid
 		};
 		
 		var isFavorite = req.params.isFavorite;
-		
 		if(isFavorite) {
 			favorites.insertOne(favDoc, function(err, result) {
 				if(err != null) {
 					console.log(err);
 				}
+				db.close();
+				res.send("OK");
 			});
 		} else {
 			favorites.findOneAndDelete(favDoc, null, function(err, result) {
 				if(err != null) {
 					console.log(err);
 				}
+				db.close();
+				res.send("OK");
 			});
 		}
-		db.close();
-		res.send("OK");
 	});
 });
 

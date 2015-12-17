@@ -1,4 +1,5 @@
 var selectedPackage = null;
+var curUser = null;
 var Ajax = {
     request: function (url, method, headers, data, success, failure) {
         var xhr = new XMLHttpRequest();
@@ -16,9 +17,22 @@ var Ajax = {
         for (var header in headers) {
             xhr.setRequestHeader(header, headers[header]);
         }
-        xhr.send();
+        if (data) {
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(data));
+        }
+        else {
+            xhr.send();
+        }
     },
 };
+function getHeaders(user) {
+    var headers = null;
+    if (user != null) {
+        headers = { userid: user.upn, tenantid: user.tenantId };
+    }
+    return headers;
+}
 function renderContributors(contributors) {
     document.getElementById("contributors_container").style.display = "block";
     document.querySelectorAll("#contributors_title span")[0].innerHTML = selectedPackage;
@@ -68,7 +82,7 @@ function renderRepos(repos) {
                 button = button.parentNode;
             }
             var isFavorite = button.classList.contains("btn-default");
-            Ajax.request("/favorite/" + button.getAttribute("data-repo"), "POST", null, {
+            Ajax.request("/favorite/" + button.getAttribute("data-repo"), "POST", getHeaders(curUser), {
                 isFavorite: isFavorite
             }, function (data) {
                 if (isFavorite) {
@@ -83,6 +97,21 @@ function renderRepos(repos) {
         });
     }
 }
+function getRepos() {
+    Ajax.request("/repos", "GET", getHeaders(curUser), null, renderRepos, null);
+}
 document.addEventListener("DOMContentLoaded", function () {
-    Ajax.request("/repos", "GET", null, null, renderRepos, null);
+    getRepos();
+    document.getElementById("login").addEventListener("click", function (e) {
+        e.preventDefault();
+        var identity = new Kurve.Identity("212065fa-ca9e-472a-8b0e-84a0b36c5f64", window.location.origin + "/login.html");
+        identity.login(function (error) {
+            if (identity.isLoggedIn()) {
+                curUser = identity.getIdToken();
+                document.getElementById("contributors_container").style.display = "none";
+                document.getElementById("login").style.display = "none";
+                getRepos();
+            }
+        });
+    });
 });

@@ -38,16 +38,21 @@ server.get("/repos", function (req, res, next) {
         var packageNames = Object.keys(packages).slice(0, NUM_PACKAGES_TO_SHOW);
         var payload = [];
         var num_processed = 0;
-        var favorites = null;
         mongoServer.connect(mongoUri, function (err, db) {
+            var favorites = db.collection('favorites');
             packageNames.forEach(function (name) {
                 var objToFind = {
                     repo: name,
+                    userid: null,
+                    tenantid: null
                 };
                 var userid = req.header("userid");
                 var tenantid = req.header("tenantid");
-                favorites = db.collection('favorites');
-                favorites.find(objToFind).next(function (err, doc) {
+                if (userid != null && tenantid != null) {
+                    objToFind.userid = userid;
+                    objToFind.tenantid = tenantid;
+                }
+                favorites.findOne(objToFind, function (err, doc) {
                     var item = { name: name, rank: packages[name].rank, favorite: false };
                     if (doc !== null) {
                         item.favorite = true;
@@ -91,6 +96,8 @@ server.post("/favorite/:repo", function (req, res, next) {
                 if (err != null) {
                     console.log(err);
                 }
+                db.close();
+                res.send("OK");
             });
         }
         else {
@@ -98,10 +105,10 @@ server.post("/favorite/:repo", function (req, res, next) {
                 if (err != null) {
                     console.log(err);
                 }
+                db.close();
+                res.send("OK");
             });
         }
-        db.close();
-        res.send("OK");
     });
 });
 server.get(/.*/, restify.serveStatic({
