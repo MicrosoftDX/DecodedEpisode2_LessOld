@@ -49,20 +49,20 @@ function renderContributors(contributors) {
         container.appendChild(tableRow);
     }
 }
-function renderRepos(repos) {
-    var container = document.querySelectorAll("#repos tbody")[0];
+function renderPackages(packages) {
+    var container = document.querySelectorAll("#packages tbody")[0];
     while (container.hasChildNodes()) {
         container.removeChild(container.firstChild);
     }
-    for (var index = 0; index < repos.length; index++) {
-        var repo = repos[index];
+    for (var index = 0; index < packages.length; index++) {
+        var package = packages[index];
         var btnClass = "btn-default";
-        if (repo.favorite) {
+        if (package.favorite) {
             btnClass = "btn-success";
         }
         var tableRow = document.createElement("tr");
-        tableRow.innerHTML = '<td><a data-repo="' + repo.name + '" href="#" class="favorite btn ' + btnClass + '"><span class="glyphicon glyphicon-star"></span></a></td>' +
-            "<td><a class='repo' href='#'>" + repo.name + "</a></td>";
+        tableRow.innerHTML = '<td><a data-repo="' + package.name + '" href="#" class="favorite btn ' + btnClass + '"><span class="glyphicon glyphicon-star"></span></a></td>' +
+            "<td><a class='repo' href='#'>" + package.name + "</a></td>";
         container.appendChild(tableRow);
     }
     var repoElements = document.getElementsByClassName("repo");
@@ -97,11 +97,11 @@ function renderRepos(repos) {
         });
     }
 }
-function getRepos() {
-    Ajax.request("/repos", "GET", getHeaders(curUser), null, renderRepos, null);
+function getPackages() {
+    Ajax.request("/packages", "GET", getHeaders(curUser), null, renderPackages, null);
 }
 document.addEventListener("DOMContentLoaded", function () {
-    getRepos();
+    getPackages();
     document.getElementById("login").addEventListener("click", function (e) {
         e.preventDefault();
         var identity = new Kurve.Identity("212065fa-ca9e-472a-8b0e-84a0b36c5f64", window.location.origin + "/login.html");
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 curUser = identity.getIdToken();
                 document.getElementById("contributors_container").style.display = "none";
                 document.getElementById("login").style.display = "none";
-                getRepos();
+                getPackages();
             }
         });
     });
