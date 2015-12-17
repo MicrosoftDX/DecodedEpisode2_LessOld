@@ -52,8 +52,6 @@ server.get("/repos", function(req, res, next) {
 				var objToFind = {
 					repo: name,
 				};
-				var userid = req.header("userid");
-				var tenantid = req.header("tenantid");
 				favorites = db.collection('favorites');
 				favorites.find(objToFind).next(function(err, doc) {
 					var item = {name: name, rank: packages[name].rank, favorite: false};
