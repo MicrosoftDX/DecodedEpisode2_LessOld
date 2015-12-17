@@ -1,0 +1,22 @@
+{
+  "name": "DecodedEpisode2",
+  "version": "1.0.0",
+  "description": "Source for Decoded Episode 2",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MicrosoftDX/DecodedEpisode2.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MicrosoftDX/DecodedEpisode2/issues"
+  },
+  "homepage": "https://github.com/MicrosoftDX/DecodedEpisode2",
+  "dependencies": {
+    "restify": "^4.0.3"
+  }
+}
