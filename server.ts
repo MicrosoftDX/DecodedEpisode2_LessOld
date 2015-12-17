@@ -19,11 +19,11 @@ var mongoUri = "mongodb://" + mongoUser + ":" + mongoPassword + "@" + mongoServe
 
 server.use(restify.bodyParser());
 
-server.get("/contributors/:repo", function(req, res, next) {
+server.get("/contributors/:pkg", function(req, res, next) {
 	var github = new GitHubApi({
 		version: "3.0.0"
 	});
-	npm.packages.get(req.params.repo, function(err, packageDetails) {
+	npm.packages.get(req.params.pkg, function(err, packageDetails) {
 		var gitHubInfo = packageDetails[0].github;
 		github.repos.getContributors(
 			{
