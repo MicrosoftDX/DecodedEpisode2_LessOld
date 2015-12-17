@@ -73,13 +73,24 @@ function renderRepos(repos) {
 					button = <Element>button.parentNode;
 				}
 				var isFavorite = button.classList.contains("btn-default");
-				if(isFavorite) {
-					button.classList.remove("btn-default");
-					button.classList.add("btn-success");
-				} else {
-					button.classList.remove("btn-success");
-					button.classList.add("btn-default");
-				}
+				Ajax.request(
+					"/favorite/" + button.getAttribute("data-repo"),
+					"POST",
+					null,
+					{
+						isFavorite: isFavorite
+					},
+					function(data) {
+						if(isFavorite) {
+							button.classList.remove("btn-default");
+							button.classList.add("btn-success");
+						} else {
+							button.classList.remove("btn-success");
+							button.classList.add("btn-default");
+						}
+					},
+					null
+				);
 			}
 		);
 	}
